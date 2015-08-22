@@ -1,0 +1,14 @@
+{
+  "name": "feed",
+  "version": "0.0.5",
+  "description": "",
+  "main": "feed.js",
+  "author": "Mearwin",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "bower": "^1.4.1",
+    "express": "4.12.3",
+    "multer": "~0.1.8",
+    "winston": "^1.0.1"
+  }
+}

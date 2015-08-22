@@ -1,0 +1,109 @@
+<html ng-app="feedApp" ng-controller="feedCtrl as main">
+<head>
+
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="./bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="./js/mainController.js"></script>
+
+
+
+  <style>
+  .upload-drop-zone {
+    height: 200px;
+    border-width: 2px;
+    margin-bottom: 20px;
+  }
+
+  .upload-drop-zone {
+    color: #ccc;
+    border-style: dashed;
+    border-color: #ccc;
+    line-height: 200px;
+    text-align: center
+  }
+  .upload-drop-zone.hover {
+    color: #222;
+    border-color: #222;
+  }
+  </style>
+</head>
+<body>
+
+  <div style="padding-top: 40px;" class="container" id="container">
+    <div class="col-md-6">
+      <div id="drop" class="upload-drop-zone">
+        <h1 class="glyphicon glyphicon-cloud-upload"></h1>
+        <h2>Drop here to upload.</h2>
+      </div>
+      <div ng-if="progress.total" class="progress">
+        <div class="progress-bar progress-bar-striped active" ng-class="{'progress-bar-success':progress.loaded==progress.total}" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{progress.loaded/progress.total*100 | number: 1}}%">
+          {{progress.loaded/progress.total*100 | number: 1}}%
+        </div>
+      </div>
+      <div>
+        <div ng-if="progress.total" class="alert alert-info">
+          <div ng-if="progress.total>1000000">
+            ({{progress.loaded/1000000 | number: 1}}/{{progress.total/1000000 | number: 1}} Mo)
+            ({{(progress.loaded - lastProgress.loaded)/((progress.timeStamp - lastProgress.timeStamp)) | number: 1}} Mo/s)
+          </div>
+          <div ng-if="progress.total<1000000">
+            ({{progress.loaded/1000 | number: 1}}/{{progress.total/1000 | number: 1}} Ko)
+            ({{(progress.loaded - lastProgress.loaded)*1000/(progress.timeStamp - lastProgress.timeStamp) | number: 1}} Ko/s)
+          </div>
+        </div>
+      </div>
+      <div class="alert" ng-class="{'alert-success' : uploadSuccess, 'alert-danger' : !uploadSuccess}" ng-if="uploadMessage != null">
+        {{uploadMessage}}
+      </div>
+    </div>
+
+
+
+
+    <div class="col-md-6">
+      <div class="input-group" style="padding-bottom: 10px;">
+        <span class="input-group-addon" id="search-addon"><span class="glyphicon glyphicon-search"></span></span>
+        <input type="text"  class="form-control" ng-model="search" ng-change="getFileList()" placeholder="Search"
+        aria-describedby="search-addon">
+      </div>
+      <span>
+        <ol class="breadcrumb col-md-11" style="min-height: 36px;">
+          <li>
+            <a href="" ng-if="main.path.length !== 0" class="glyphicon glyphicon-home" ng-click="main.path = []; getFileList();"></a>
+            <span ng-if="main.path.length === 0" class="glyphicon glyphicon-home"></span>
+          </li>
+          <li ng-repeat="dir in main.path" ng-class="{'active' : $last}">
+            <a href="" ng-if="!$last" ng-click="main.path = main.path.slice(0, $index-1); getFileList();">{{dir}}</a>
+            <span ng-if="$last">{{dir}}</span>
+          </li>
+        </ol>
+        <span class="btn btn-default glyphicon glyphicon-level-up pull-right col-md-1" ng-click="main.path.pop(); getFileList();" ng-disabled="main.path.length===0"></span>
+      </span>
+      <table class="table table-hover">
+        <tr ng-repeat="file in list">
+          <td>
+            <a ng-if="!file.isDir" href="/file?path={{getPath()+file.name}}">{{file.name}}</a>
+            <div ng-if="file.isDir">{{file.name}}</div>
+          </td>
+          <td>
+            <a ng-if="!file.isDir" href="/file?path={{getPath()+file.name}}" download="{{file.name}}" class="btn btn-default glyphicon glyphicon-download-alt"></a>
+            <div ng-if="file.isDir" ng-click="enter(file.name)" class="btn btn-default glyphicon glyphicon-folder-open"></div>            
+          </td>
+          <td>
+            <div ng-if="!file.isDir" class="btn btn-danger glyphicon glyphicon-remove" ng-click="removeFile(file.name)"></div>
+          </td> 
+        </tr>
+      </table>
+
+    </div>
+  </div>
+
+</body>
+</html>
